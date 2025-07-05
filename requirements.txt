@@ -1,6 +1,4 @@
 Flask==3.0.2
 Werkzeug==3.0.1
 python-dotenv==1.0.1 
-   git add requirements.txt
-   git commit -m "Add gunicorn to requirements"
-   git push
+gunicorn==21.2.0
