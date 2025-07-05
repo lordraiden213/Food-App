@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <div class="bg-white bg-opacity-5 backdrop-blur-md border border-white/10 rounded-lg shadow-xl p-8">
+        <h1 class="text-3xl font-bold text-center text-white mb-6 drop-shadow-lg">Official Receipt</h1>
+        <div class="bg-gray-800 bg-opacity-50 rounded-md p-4 text-white max-w-xl mx-auto mb-6">
+            <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+            <p><strong>Date:</strong> {{ order.order_date | format_datetime }}</p>
+            <p><strong>Customer:</strong> {{ order.customer.name }}</p>
+            <p><strong>Phone:</strong> {{ order.customer.phone }}</p>
+            <p><strong>Address:</strong> {{ order.customer.address }}</p>
+            {% if order.customer.notes %}
+            <p><strong>Notes:</strong> {{ order.customer.notes }}</p>
+            {% endif %}
+            <p><strong>Delivery Service:</strong> <span style="color: {{ order.service_color }}">{{ order.delivery_service }}</span></p>
+            <p><strong>Rider:</strong> {{ order.rider.name }} ⭐ {{ order.rider.rating }}</p>
+            <p><strong>Estimated Delivery:</strong> {{ order.estimated_delivery | format_datetime }}</p>
+        </div>
+        <div class="overflow-x-auto mb-6">
+            <table class="min-w-full bg-gray-900 bg-opacity-70 rounded-lg">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 text-left">Item</th>
+                        <th class="py-2 px-4 text-right">Price</th>
+                        <th class="py-2 px-4 text-center">Qty</th>
+                        <th class="py-2 px-4 text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order['items'] %}
+                    <tr>
+                        <td class="py-2 px-4">{{ item.name }}</td>
+                        <td class="py-2 px-4 text-right">{{ item.price | currency }}</td>
+                        <td class="py-2 px-4 text-center">{{ item.quantity }}</td>
+                        <td class="py-2 px-4 text-right">{{ item.total | currency }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="flex justify-end mb-2">
+            <div class="text-white text-lg font-semibold">
+                Subtotal: {{ order.total | currency }}
+            </div>
+        </div>
+        <div class="flex justify-end mb-6">
+            <div class="text-white text-xl font-bold">
+                Grand Total: {{ order.total | currency }}
+            </div>
+        </div>
+        <div class="text-center mt-8">
+            <a href="{{ url_for('orders') }}" class="px-6 py-3 bg-amber-400 hover:bg-amber-500 text-indigo-900 font-semibold rounded-lg transition-colors duration-300">Back to My Orders</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

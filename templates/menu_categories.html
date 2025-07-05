@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Menu Header -->
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-2xl font-bold text-red-600">🍽️ Select Meal Time</h2>
+  <a href="{{ url_for('view_cart') }}" class="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 text-sm">
+    🛒 View Cart (<span id="cart-count">0</span>)
+  </a>
+</div>
+
+<!-- Meal Categories Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+  <!-- Breakfast Card -->
+  <a href="{{ url_for('menu_by_meal', meal_time='Breakfast') }}" 
+     class="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div class="relative h-48">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      <img src="{{ url_for('static', filename='images/hotdog.jpg') }}" 
+           alt="Breakfast" 
+           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+      <div class="absolute bottom-4 left-4 text-white">
+        <h3 class="text-2xl font-bold">Breakfast</h3>
+        <p class="text-sm opacity-90">Available 6AM - 10AM</p>
+      </div>
+    </div>
+  </a>
+
+  <!-- Lunch Card -->
+  <a href="{{ url_for('menu_by_meal', meal_time='Lunch') }}"
+     class="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div class="relative h-48">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      <img src="{{ url_for('static', filename='images/Chicken Wings.jpg') }}" 
+           alt="Lunch" 
+           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+      <div class="absolute bottom-4 left-4 text-white">
+        <h3 class="text-2xl font-bold">Lunch</h3>
+        <p class="text-sm opacity-90">Available 10AM - 2PM</p>
+      </div>
+    </div>
+  </a>
+
+  <!-- Dinner Card -->
+  <a href="{{ url_for('menu_by_meal', meal_time='Dinner') }}"
+     class="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div class="relative h-48">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      <img src="{{ url_for('static', filename='images/spaghetti.jpg') }}" 
+           alt="Dinner" 
+           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+      <div class="absolute bottom-4 left-4 text-white">
+        <h3 class="text-2xl font-bold">Dinner</h3>
+        <p class="text-sm opacity-90">Available 2PM onwards</p>
+      </div>
+    </div>
+  </a>
+</div>
+
+<!-- JavaScript for cart count -->
+<script>
+function updateCartCount() {
+  fetch("/cart-count")
+    .then(res => res.json())
+    .then(data => {
+      const counts = document.querySelectorAll("#cart-count");
+      counts.forEach(el => el.innerText = data.count);
+    })
+    .catch(error => console.error('Failed to update cart count:', error));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  updateCartCount();
+});
+</script>
+{% endblock %} 

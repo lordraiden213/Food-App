@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-4">
+    <h1 class="text-3xl md:text-4xl font-bold text-white mb-8 text-center text-shadow">Your Cart</h1>
+
+    {% if cart_items %}
+    <div class="space-y-6">
+        <!-- Cart Items -->
+        {% for item in cart_items %}
+        <div class="bg-black/40 backdrop-blur-sm rounded-xl p-6 flex flex-col sm:flex-row items-center gap-6 border border-white/10">
+            <!-- Food Image -->
+            <img src="{{ url_for('static', filename='images/' + item.image) }}" 
+                 alt="{{ item.name }}" 
+                 class="w-24 h-24 object-cover rounded-lg shadow-lg">
+            
+            <!-- Item Details -->
+            <div class="flex-grow text-center sm:text-left">
+                <h3 class="text-xl font-bold text-white mb-1 text-shadow">{{ item.name }}</h3>
+                <p class="text-gray-300 text-sm mb-2 text-shadow-sm">{{ item.description }}</p>
+                <span class="text-lg font-bold text-amber-400 text-shadow">₱{{ "%.2f"|format(item.price) }}</span>
+            </div>
+            
+            <!-- Quantity Controls and Delete -->
+            <div class="flex items-center gap-4">
+                <!-- Quantity Controls -->
+                <div class="flex items-center bg-white/20 rounded-lg">
+                    <button onclick="updateQuantity('{{ item.name }}', 'decrease')"
+                            class="px-3 py-2 text-white hover:text-amber-400 text-shadow-sm transition-colors duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                        </svg>
+                    </button>
+                    <span class="px-4 text-white font-medium text-shadow-sm min-w-[2rem] text-center">{{ item.quantity }}</span>
+                    <button onclick="updateQuantity('{{ item.name }}', 'increase')"
+                            class="px-3 py-2 text-white hover:text-amber-400 text-shadow-sm transition-colors duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Delete Button -->
+                <button onclick="removeFromCart('{{ item.name }}')"
+                        class="text-red-400 hover:text-red-300 p-2 rounded-full hover:bg-red-400/10 transition-colors duration-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Total and Action Buttons -->
+        <div class="bg-black/40 backdrop-blur-sm rounded-xl p-6 mt-8 border border-white/10">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-xl font-bold text-white text-shadow">Total:</span>
+                <span class="text-2xl font-bold text-amber-400 text-shadow">₱{{ "%.2f"|format(total) }}</span>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="{{ url_for('menu') }}" 
+                   class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-medium rounded-lg transition-colors duration-300 text-shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Continue Shopping
+                </a>
+                <button onclick="clearCart()" 
+                        class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-red-500/80 hover:bg-red-600/80 text-white font-medium rounded-lg transition-colors duration-300 text-shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Clear Cart
+                </button>
+                <a href="{{ url_for('checkout') }}" 
+                   class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-amber-400 hover:bg-amber-500 text-indigo-900 font-medium rounded-lg transition-colors duration-300">
+                    Proceed to Checkout
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty Cart State -->
+    <div class="text-center py-12">
+        <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 max-w-md mx-auto border border-white/10">
+            <svg class="w-16 h-16 text-amber-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <h3 class="text-xl font-bold text-white mb-2 text-shadow">Your Cart is Empty</h3>
+            <p class="text-gray-300 mb-6 text-shadow-sm">Add some delicious items from our menu!</p>
+            <a href="{{ url_for('menu') }}" 
+               class="inline-flex items-center justify-center px-6 py-3 bg-amber-400 hover:bg-amber-500 text-indigo-900 font-semibold rounded-lg transition-colors duration-300">
+                Browse Menu
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Flash Messages Container -->
+<div class="flash-messages fixed top-4 right-4 z-50"></div>
+
+<script>
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `flash-message flash-${type} bg-${type === 'success' ? 'green' : 'red'}-500 text-white px-6 py-3 rounded-lg shadow-lg`;
+    notification.textContent = message;
+    
+    const container = document.querySelector('.flash-messages');
+    container.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function updateQuantity(itemName, action) {
+    fetch('/update-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            name: itemName,
+            action: action
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            showNotification(data.error || 'Failed to update quantity', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Failed to update quantity', 'error');
+    });
+}
+
+function removeFromCart(itemName) {
+    fetch('/remove-from-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: itemName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            showNotification(data.error || 'Failed to remove item', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Failed to remove item', 'error');
+    });
+}
+
+function clearCart() {
+    fetch('/clear_cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            showNotification(data.error || 'Failed to clear cart', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Failed to clear cart', 'error');
+    });
+}
+</script>
+{% endblock %}

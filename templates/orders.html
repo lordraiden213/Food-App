@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold text-white mb-8">My Orders</h1>
+    {% if orders %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-gray-900 bg-opacity-70 rounded-lg">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 text-left">Order ID</th>
+                    <th class="py-2 px-4 text-left">Date</th>
+                    <th class="py-2 px-4 text-left">Status</th>
+                    <th class="py-2 px-4 text-right">Total</th>
+                    <th class="py-2 px-4 text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders.values() %}
+                <tr>
+                    <td class="py-2 px-4">{{ order.order_id }}</td>
+                    <td class="py-2 px-4">{{ order.order_date | format_datetime }}</td>
+                    <td class="py-2 px-4">{{ order.status }}</td>
+                    <td class="py-2 px-4 text-right">{{ order.total | currency }}</td>
+                    <td class="py-2 px-4 text-center">
+                        <a href="{{ url_for('view_order', order_id=order.order_id) }}" class="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-indigo-900 font-semibold rounded-lg transition-colors duration-300">View Receipt</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-white text-lg">You have no orders yet.</div>
+    {% endif %}
+</div>
+{% endblock %} 

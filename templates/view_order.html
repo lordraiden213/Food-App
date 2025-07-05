@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <div class="bg-white bg-opacity-5 backdrop-blur-md border border-white/10 rounded-lg shadow-xl p-8">
+        <h1 class="text-3xl font-bold text-center text-white mb-6 drop-shadow-lg">Official Receipt</h1>
+        <div class="bg-gray-800 bg-opacity-50 rounded-md p-4 text-white max-w-xl mx-auto mb-6">
+            <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+            <p><strong>Date:</strong> {{ order.order_date | format_datetime }}</p>
+            <p><strong>Customer:</strong> {{ order.customer.name }}</p>
+            <p><strong>Phone:</strong> {{ order.customer.phone }}</p>
+            <p><strong>Address:</strong> {{ order.customer.address }}</p>
+            {% if order.customer.notes %}
+            <p><strong>Notes:</strong> {{ order.customer.notes }}</p>
+            {% endif %}
+            <p><strong>Delivery Service:</strong> <span style="color: {{ order.service_color }}">{{ order.delivery_service }}</span></p>
+            <p><strong>Rider:</strong> {{ order.rider.name }} ⭐ {{ order.rider.rating }}</p>
+            <p><strong>Estimated Delivery:</strong> {{ order.estimated_delivery | format_datetime }}</p>
+        </div>
+        <div class="overflow-x-auto mb-6">
+            <table class="min-w-full bg-gray-900 bg-opacity-70 rounded-lg">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 text-left">Item</th>
+                        <th class="py-2 px-4 text-right">Price</th>
+                        <th class="py-2 px-4 text-center">Qty</th>
+                        <th class="py-2 px-4 text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order['items'] %}
+                    <tr>
+                        <td class="py-2 px-4">{{ item.name }}</td>
+                        <td class="py-2 px-4 text-right">{{ item.price | currency }}</td>
+                        <td class="py-2 px-4 text-center">{{ item.quantity }}</td>
+                        <td class="py-2 px-4 text-right">{{ item.total | currency }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="flex justify-end mb-2">
+            <div class="text-white text-lg font-semibold">
+                Subtotal: {{ order.total | currency }}
+            </div>
+        </div>
+        <div class="flex justify-end mb-6">
+            <div class="text-white text-xl font-bold">
+                Grand Total: {{ order.total | currency }}
+            </div>
+        </div>
+        <div class="text-center mt-8 inline-chat">
+            <a href="{{ url_for('orders') }}" class="px-6 py-3 bg-amber-400 hover:bg-amber-500 text-indigo-900 font-semibold rounded-lg transition-colors duration-300">Back to My Orders</a>
+            <div id="chat-widget">
+                <div id="chat-header">
+                    <span style="display:flex;align-items:center;gap:0.5rem;">
+                        <i class="fa-solid fa-comments"></i>
+                        Customer Service Chat
+                    </span>
+                    <span class="chat-close" title="Minimize"><i class="fa-solid fa-minus"></i></span>
+                </div>
+                <div id="chat-body">
+                    <div id="chat-history">
+                        <div><span style="color:#fbbf24;">Support:</span> Hello! How can we help you today?</div>
+                    </div>
+                </div>
+                <form id="chat-input">
+                    <input type="text" id="chat-message" placeholder="Type your message..." autocomplete="off" required />
+                    <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+            <button id="chat-toggle" class="visible" title="Open Chat"><i class="fa-solid fa-comments"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome CDN for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<style>
+.inline-chat {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+#chat-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 300px;
+    max-width: 90vw;
+    background: #23272f;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    font-family: inherit;
+    border: 2px solid #fbbf24;
+    opacity: 0.97;
+    transition: opacity 0.2s, transform 0.2s;
+}
+#chat-widget.minimized {
+    display: none;
+}
+#chat-header {
+    background: #fbbf24;
+    color: #1e293b;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem 1rem 0 0;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    justify-content: space-between;
+}
+#chat-header i.fa-comments {
+    font-size: 1.4rem;
+    color: #1e293b;
+}
+#chat-header .chat-close {
+    font-size: 1.3rem;
+    color: #1e293b;
+    cursor: pointer;
+    margin-left: 8px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+#chat-header .chat-close:hover {
+    opacity: 1;
+}
+#chat-body {
+    padding: 1rem;
+    height: 180px;
+    overflow-y: auto;
+    background: #23272f;
+    color: #fff;
+    font-size: 0.95rem;
+}
+#chat-input {
+    display: flex;
+    border-top: 1px solid #374151;
+    background: #23272f;
+}
+#chat-input input {
+    flex: 1;
+    border: none;
+    padding: 0.75rem;
+    background: #23272f;
+    color: #fff;
+    border-radius: 0 0 0 1rem;
+    outline: none;
+}
+#chat-input button {
+    background: #fbbf24;
+    color: #1e293b;
+    border: none;
+    padding: 0 1.25rem;
+    border-radius: 0 0 1rem 0;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#chat-input button:hover {
+    background: #f59e42;
+}
+#chat-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #fbbf24;
+    color: #1e293b;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 1.7rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 1001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+#chat-toggle.visible {
+    display: flex;
+}
+@media print {
+    #chat-widget, #chat-toggle { display: none !important; }
+}
+</style>
+
+<script>
+const chatWidget = document.getElementById('chat-widget');
+const chatInput = document.getElementById('chat-input');
+const chatMessage = document.getElementById('chat-message');
+const chatHistory = document.getElementById('chat-history');
+const chatToggle = document.getElementById('chat-toggle');
+const chatClose = document.querySelector('#chat-header .chat-close');
+
+chatClose.onclick = () => {
+    chatWidget.classList.add('minimized');
+    chatToggle.classList.add('visible');
+};
+chatToggle.onclick = () => {
+    chatWidget.classList.remove('minimized');
+    chatToggle.classList.remove('visible');
+};
+
+let lastMessageCount = 0;
+let pollingInterval = null;
+const sessionId = '{{ order.order_id }}';
+
+function formatTimestamp(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function appendMessage(sender, message, timestamp) {
+    const div = document.createElement('div');
+    div.className = sender === 'admin' ? 'chat-bubble admin-bubble' : 'chat-bubble user-bubble';
+    div.innerHTML = `<span class='sender-label'>${sender === 'admin' ? 'Support' : 'You'}:</span> ${message}` + (timestamp ? `<span class='timestamp'>${formatTimestamp(timestamp)}</span>` : '');
+    chatHistory.appendChild(div);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+function loadChatHistory() {
+    fetch(`/admin/api/messages/${sessionId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                chatHistory.innerHTML = '';
+                const messages = data.messages;
+                if (messages.length === 0) {
+                    appendMessage('admin', 'Hello! How can we help you today?');
+                } else {
+                    messages.forEach(msg => {
+                        appendMessage(msg.sender, msg.message, msg.timestamp);
+                    });
+                }
+                lastMessageCount = messages.length;
+            }
+        });
+}
+
+function pollAdminReplies() {
+    fetch(`/admin/api/messages/${sessionId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const messages = data.messages;
+                if (messages.length > lastMessageCount) {
+                    for (let i = lastMessageCount; i < messages.length; i++) {
+                        const msg = messages[i];
+                        appendMessage(msg.sender, msg.message, msg.timestamp);
+                    }
+                    lastMessageCount = messages.length;
+                }
+            }
+        });
+}
+
+chatInput.onsubmit = async (e) => {
+    e.preventDefault();
+    const msg = chatMessage.value.trim();
+    if (msg) {
+        appendMessage('user', msg);
+        chatMessage.value = '';
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        // Show typing indicator
+        const loadingMsg = document.createElement('div');
+        loadingMsg.className = 'support-typing';
+        loadingMsg.innerHTML = `<span style='color:#fbbf24;'>Support:</span> <em>Typing...</em>`;
+        chatHistory.appendChild(loadingMsg);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        try {
+            await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg, order_id: sessionId })
+            });
+            setTimeout(() => {
+                if (loadingMsg.parentNode) loadingMsg.parentNode.removeChild(loadingMsg);
+            }, 1000);
+        } catch (err) {
+            if (loadingMsg.parentNode) loadingMsg.parentNode.removeChild(loadingMsg);
+            const errorMsg = document.createElement('div');
+            errorMsg.innerHTML = `<span style='color:#f87171;'>Error:</span> Could not connect to support. Please try again later.`;
+            chatHistory.appendChild(errorMsg);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+    }
+};
+
+// Chat bubble styles
+const style = document.createElement('style');
+style.innerHTML = `
+.chat-bubble { margin: 8px 0; padding: 8px 14px; border-radius: 18px; max-width: 80%; display: inline-block; position: relative; }
+.admin-bubble { background: #fbbf24; color: #1e293b; align-self: flex-start; }
+.user-bubble { background: #38bdf8; color: #fff; align-self: flex-end; margin-left: auto; }
+.sender-label { font-weight: bold; margin-right: 6px; }
+.timestamp { font-size: 0.8em; color: #888; margin-left: 8px; }
+`;
+document.head.appendChild(style);
+
+// Initial load and polling
+loadChatHistory();
+pollingInterval = setInterval(pollAdminReplies, 3000);
+window.onbeforeunload = () => { if (pollingInterval) clearInterval(pollingInterval); };
+</script>
+{% endblock %} 

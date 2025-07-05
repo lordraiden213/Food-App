@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-screen">
+    <!-- Hero Section -->
+    <section class="relative py-20 md:py-32 px-4">
+        <div class="container mx-auto">
+            <!-- Hero Content -->
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
+                    <span class="block">Ramirez</span>
+                    <span class="text-amber-400">ONLINE ORDERING APP FOOD</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                    Experience the finest food delivery service. Fresh, fast, and right at your doorstep.
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                    <a href="{{ url_for('menu') }}" 
+                       class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-indigo-900 bg-opacity-95 rounded-xl hover:bg-indigo-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <span>Browse Menu</span>
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </a>
+                    
+                    {% if session.get('cart', []) %}
+                    <a href="{{ url_for('view_cart') }}" 
+                       class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-indigo-900 bg-amber-400 bg-opacity-95 rounded-xl hover:bg-amber-500 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span>View Cart ({{ session.get('cart', [])|length }})</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
+                <!-- Fast Delivery -->
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 transform transition-all duration-300 hover:scale-105">
+                    <div class="bg-indigo-900 bg-opacity-95 rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 mx-auto">
+                        <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white text-center mb-2">Fast Delivery</h3>
+                    <p class="text-gray-200 text-center">Guaranteed delivery within 30-45 minutes to your location</p>
+                </div>
+
+                <!-- Easy Ordering -->
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 transform transition-all duration-300 hover:scale-105">
+                    <div class="bg-indigo-900 bg-opacity-95 rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 mx-auto">
+                        <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white text-center mb-2">Easy Ordering</h3>
+                    <p class="text-gray-200 text-center">Simple and intuitive ordering process, just a few taps away</p>
+                </div>
+
+                <!-- Best Quality -->
+                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 transform transition-all duration-300 hover:scale-105">
+                    <div class="bg-indigo-900 bg-opacity-95 rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 mx-auto">
+                        <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white text-center mb-2">Best Quality</h3>
+                    <p class="text-gray-200 text-center">Premium quality ingredients and professional preparation</p>
+                </div>
+            </div>
+
+            <!-- Download App Section -->
+            <div class="mt-20 text-center">
+                <div class="inline-flex items-center justify-center space-x-4 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2">
+                    <span class="text-white font-medium">Available on</span>
+                    <div class="flex space-x-4">
+                        <a href="#" class="transform transition hover:scale-110">
+                            <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.08-.46-2.07-.48-3.2 0-1.42.61-2.16.44-3.04-.35C4.43 17.01 4.1 12.41 7.53 12c1.17-.16 2.03.34 2.76.34.72 0 2.08-.42 3.5-.36 5.95.32 6.97 8.34 3.26 8.3zM15.05 6.35c1.21-1.47 1.12-3.5-.31-4.35-1.19.83-1.36 2.86-.15 4.33.59.71 1.35 1 2.25.91.09-.35.14-.7.14-1.05 0-2.21-1.79-4-4-4S9 4 9 6.21c0 .35.04.7.13 1.03.86.08 1.64-.19 2.23-.9 1.22-1.46 1.06-3.5-.13-4.33-1.44.85-1.54 2.88-.32 4.35"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="transform transition hover:scale-110">
+                            <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.523 15.34c.44-.52.77-1.07 1-1.64l-3.87-2.23-.17 5.82 3.04-1.95zm-12.95 0l3.05 1.95-.18-5.82-3.86 2.23c.22.57.55 1.12 1 1.64zM16.52 2h-9.04L12 7.8 16.52 2zM7.68 4.2L3.73 9.75c.46 1.06 1.05 2.03 1.74 2.89l3.62-2.09L7.68 4.2zm8.64 0l-1.41 6.35 3.62 2.09c.69-.86 1.28-1.83 1.74-2.89L16.32 4.2zM12 8.96l-3.43 6.17.08 6.2c.97.29 2 .45 3.35.45 1.35 0 2.38-.16 3.35-.45l.08-6.2L12 8.96z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <div class="container mx-auto px-4 py-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-amber-400 mb-8 drop-shadow-lg">App Features</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-gray-900 bg-opacity-70 rounded-lg p-6 text-center shadow-lg">
+                <img src="/static/images/burger.jpg" alt="Menu" class="mx-auto mb-4 w-20 h-20 object-cover rounded-full shadow-md">
+                <h3 class="text-xl font-semibold text-white mb-2">Wide Food Selection</h3>
+                <p class="text-gray-300">Browse a variety of delicious meals, snacks, and drinks from our menu.</p>
+            </div>
+            <div class="bg-gray-900 bg-opacity-70 rounded-lg p-6 text-center shadow-lg">
+                <img src="/static/images/cart.jpg" alt="Cart" class="mx-auto mb-4 w-20 h-20 object-cover rounded-full shadow-md print-hide">
+                <h3 class="text-xl font-semibold text-white mb-2">Easy Cart & Checkout</h3>
+                <p class="text-gray-300">Add items to your cart and enjoy a smooth, secure checkout process.</p>
+            </div>
+            <div class="bg-gray-900 bg-opacity-70 rounded-lg p-6 text-center shadow-lg">
+                <img src="/static/images/jollibee-icon.png" alt="Delivery" class="mx-auto mb-4 w-20 h-20 object-cover rounded-full shadow-md">
+                <h3 class="text-xl font-semibold text-white mb-2">Fast Delivery</h3>
+                <p class="text-gray-300">Get your food delivered quickly by trusted riders from Grab and Foodpanda.</p>
+            </div>
+            <div class="bg-gray-900 bg-opacity-70 rounded-lg p-6 text-center shadow-lg">
+                <img src="/static/images/hehe.jpg" alt="Order Tracking" class="mx-auto mb-4 w-20 h-20 object-cover rounded-full shadow-md">
+                <h3 class="text-xl font-semibold text-white mb-2">Order Tracking</h3>
+                <p class="text-gray-300">Track your order status from preparation to delivery in real time.</p>
+            </div>
+            <div class="bg-gray-900 bg-opacity-70 rounded-lg p-6 text-center shadow-lg">
+                <img src="/static/images/now.jpg" alt="Official Receipt" class="mx-auto mb-4 w-20 h-20 object-cover rounded-full shadow-md">
+                <h3 class="text-xl font-semibold text-white mb-2">Official Receipt</h3>
+                <p class="text-gray-300">Download or print an official receipt for every order you place.</p>
+            </div>
+            <div class="bg-gray-900 bg-opacity-70 rounded-lg p-6 text-center shadow-lg">
+                <img src="/static/images/contact.jpg" alt="Support" class="mx-auto mb-4 w-20 h-20 object-cover rounded-full shadow-md">
+                <h3 class="text-xl font-semibold text-white mb-2">Customer Support</h3>
+                <p class="text-gray-300">Contact us easily for any questions or help with your orders.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

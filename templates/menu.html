@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Menu Navigation -->
+<div class="mb-8">
+    <h1 class="text-3xl md:text-4xl font-bold text-white mb-6 text-center text-shadow">Our Menu</h1>
+    
+    <!-- Category Navigation -->
+    <div class="flex flex-wrap justify-center gap-3 mb-8">
+        <a href="{{ url_for('menu') }}" 
+           class="px-4 py-2 rounded-full text-sm font-medium {% if not current_category %}bg-amber-400 text-indigo-900{% else %}bg-white/20 text-white hover:bg-white/30{% endif %} transition-all duration-300 text-shadow-sm">
+            All Items
+        </a>
+        {% for category in all_categories %}
+        <a href="{{ url_for('menu_by_category', category=category) }}" 
+           class="px-4 py-2 rounded-full text-sm font-medium {% if current_category == category %}bg-amber-400 text-indigo-900{% else %}bg-white/20 text-white hover:bg-white/30{% endif %} transition-all duration-300 text-shadow-sm">
+            {{ category }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Menu Items Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for category, items in categories.items() %}
+        {% for item in items %}
+        <div class="menu-item bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 border border-white/10">
+            <div class="aspect-w-16 aspect-h-9 relative">
+                <img src="{{ url_for('static', filename='images/' + item.image) }}" 
+                     alt="{{ item.name }}" 
+                     class="item-image w-full h-48 object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+            </div>
+            
+            <div class="p-6">
+                <h3 class="item-name text-xl font-bold text-white mb-2 text-shadow">{{ item.name }}</h3>
+                <p class="item-description text-gray-300 text-sm mb-4 text-shadow-sm">{{ item.description }}</p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="item-price text-2xl font-bold text-amber-400 text-shadow">₱{{ "%.2f"|format(item.price) }}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center bg-white/20 rounded-lg">
+                            <button onclick="decrementQuantity('{{ item.name }}')"
+                                    class="px-3 py-2 text-white hover:text-amber-400 text-shadow-sm transition-colors duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                </svg>
+                            </button>
+                            <input type="number" 
+                                   id="quantity-{{ item.name|replace(' ', '-')|lower }}"
+                                   class="w-16 px-2 py-1 text-center bg-transparent text-white border-none focus:outline-none focus:ring-0"
+                                   value="1"
+                                   min="1"
+                                   max="99">
+                            <button onclick="incrementQuantity('{{ item.name }}')"
+                                    class="px-3 py-2 text-white hover:text-amber-400 text-shadow-sm transition-colors duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <button onclick="addToCart('{{ item.name }}')"
+                                class="flex-1 bg-amber-400 text-indigo-900 px-4 py-2 rounded-lg hover:bg-amber-500 transition-colors duration-300 flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            <span>Add to Cart</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+<!-- Empty State -->
+{% if not categories %}
+<div class="text-center py-12">
+    <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 max-w-md mx-auto border border-white/10">
+        <svg class="w-16 h-16 text-amber-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+        <h3 class="text-xl font-bold text-white mb-2 text-shadow">No Items Available</h3>
+        <p class="text-gray-300 mb-6 text-shadow-sm">Please check back later or try a different category.</p>
+        <a href="{{ url_for('menu') }}" 
+           class="inline-flex items-center justify-center px-6 py-3 bg-amber-400 hover:bg-amber-500 text-indigo-900 font-semibold rounded-lg transition-colors duration-300">
+            Browse Menu
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Flash Messages Container -->
+<div class="flash-messages fixed top-4 right-4 z-50"></div>
+
+<script>
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `flash-message flash-${type} bg-${type === 'success' ? 'green' : 'red'}-500 text-white px-6 py-3 rounded-lg shadow-lg`;
+    notification.textContent = message;
+    
+    const container = document.querySelector('.flash-messages');
+    container.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function incrementQuantity(itemName) {
+    const input = document.getElementById(`quantity-${itemName.toLowerCase().replace(/ /g, '-')}`);
+    const currentValue = parseInt(input.value) || 0;
+    input.value = Math.min(currentValue + 1, 99);
+}
+
+function decrementQuantity(itemName) {
+    const input = document.getElementById(`quantity-${itemName.toLowerCase().replace(/ /g, '-')}`);
+    const currentValue = parseInt(input.value) || 0;
+    input.value = Math.max(currentValue - 1, 1);
+}
+
+function addToCart(itemName) {
+    const menuItems = document.querySelectorAll('.menu-item');
+    let itemData = null;
+
+    // Find the menu item with matching name
+    for (const menuItem of menuItems) {
+        const nameElement = menuItem.querySelector('.item-name');
+        if (nameElement && nameElement.textContent.trim() === itemName) {
+            const priceElement = menuItem.querySelector('.item-price');
+            const descElement = menuItem.querySelector('.item-description');
+            const imageElement = menuItem.querySelector('.item-image');
+            const quantityInput = document.getElementById(`quantity-${itemName.toLowerCase().replace(/ /g, '-')}`);
+            
+            itemData = {
+                name: itemName,
+                price: parseFloat(priceElement.textContent.replace('₱', '')),
+                description: descElement.textContent.trim(),
+                image: imageElement.getAttribute('src').split('/').pop(),
+                quantity: parseInt(quantityInput.value) || 1
+            };
+            break;
+        }
+    }
+
+    if (!itemData) {
+        showNotification('Item not found', 'error');
+        return;
+    }
+
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(itemData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(`Added ${itemData.quantity} ${itemName}${itemData.quantity > 1 ? 's' : ''} to cart!`);
+            // Reset quantity to 1 after successful addition
+            document.getElementById(`quantity-${itemName.toLowerCase().replace(/ /g, '-')}`).value = 1;
+        } else {
+            showNotification(data.error || 'Failed to add item to cart', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Failed to add item to cart', 'error');
+    });
+}
+</script>
+{% endblock %}
